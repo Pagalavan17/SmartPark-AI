@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "appName": "SmartPark AI",
+  "welcomeTitle": "Find Parking Effortlessly with AI",
+  "welcomeSubtitle": "Real-time parking, smart routes, and instant booking at your fingertips.",
+  "searchPlaceholder": "Search parking by location or venue...",
+  "aiRecommendation": "AI Parking Recommendation",
+  "trafficPrediction": "Traffic & Congestion Alert",
+  "reserveSpot": "Reserve Parking Slot",
+  "payNow": "Pay with Razorpay",
+  "activeBooking": "Active Parking Reservation",
+  "qrPassTitle": "Entry / Exit QR Pass",
+  "notificationsTitle": "Smart Notifications",
+  "profileTitle": "User Profile",
+  "settingsTitle": "App Settings",
+  "selectLanguage": "Select Language"
+}

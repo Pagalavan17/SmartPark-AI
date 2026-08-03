@@ -1,0 +1,17 @@
+{
+  "@@locale": "hi",
+  "appName": "स्मार्टपार्र्क AI",
+  "welcomeTitle": "AI के साथ आसानी से पार्किंग खोजें",
+  "welcomeSubtitle": "रियल-टाइम पार्किंग, स्मार्ट रूट और त्वरित बुकिंग।",
+  "searchPlaceholder": "स्थान या स्थल द्वारा पार्किंग खोजें...",
+  "aiRecommendation": "AI पार्किंग सिफारिश",
+  "trafficPrediction": "ट्रैफिक पूर्वानुमान",
+  "reserveSpot": "पार्किंग स्लॉट बुक करें",
+  "payNow": "Razorpay से भुगतान करें",
+  "activeBooking": "सक्रिय पार्किंग बुकिंग",
+  "qrPassTitle": "प्रवेश / निकास QR पास",
+  "notificationsTitle": "स्मार्ट सूचनाएं",
+  "profileTitle": "उपयोगकर्ता प्रोफ़ाइल",
+  "settingsTitle": "ऐप सेटिंग्स",
+  "selectLanguage": "भाषा चुनें"
+}
