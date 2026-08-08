@@ -1,0 +1,94 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // User Profiles — only the owner or admin can read/write
+    // ─────────────────────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null
+        && (request.auth.uid == uid || request.auth.token.admin == true);
+      allow delete: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Vehicles — owned by user
+    // ─────────────────────────────────────────────────────────────────────────
+    match /vehicles/{vehicleId} {
+      allow read, write: if request.auth != null
+        && resource != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Reservations / Bookings — owned by user
+    // ─────────────────────────────────────────────────────────────────────────
+    match /reservations/{reservationId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+        && resource != null
+        && resource.data.uid == request.auth.uid;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Parking Lots — public read, admin write
+    // ─────────────────────────────────────────────────────────────────────────
+    match /parking_lots/{lotId} {
+      allow read: if true; // Public read for parking availability
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Payments — owned by user, read-only after creation
+    // ─────────────────────────────────────────────────────────────────────────
+    match /payments/{paymentId} {
+      allow read: if request.auth != null
+        && resource != null
+        && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Notifications — owned by user
+    // ─────────────────────────────────────────────────────────────────────────
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sensor Data & Digital Twin — admin or service account only
+    // ─────────────────────────────────────────────────────────────────────────
+    match /sensors/{sensorId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    match /digital_twin/{twinId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Analytics — admin only
+    // ─────────────────────────────────────────────────────────────────────────
+    match /analytics/{docId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Default: deny all
+    // ─────────────────────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

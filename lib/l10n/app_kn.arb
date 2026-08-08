@@ -1,0 +1,17 @@
+{
+  "@@locale": "kn",
+  "appName": "ಸ್ಮಾರ್ಟ್‌ಪಾರ್ಕ್ AI",
+  "welcomeTitle": "AI ಮೂಲಕ ಸುಲಭವಾಗಿ ಪಾರ್ಕಿಂಗ್ ಹುಡುಕಿ",
+  "welcomeSubtitle": "ನೈಜ-ಸಮಯದ ಪಾರ್ಕಿಂಗ್, ಸ್ಮಾರ್ಟ್ ಮಾರ್ಗಗಳು ಮತ್ತು ತತ್ಕ್ಷಣದ ಬುಕಿಂಗ್.",
+  "searchPlaceholder": "ಸ್ಥಳದ ಮೂಲಕ ಪಾರ್ಕಿಂಗ್ ಹುಡುಕಿ...",
+  "aiRecommendation": "AI ಪಾರ್ಕಿಂಗ್ ಶಿಫಾರಸು",
+  "trafficPrediction": "ಟ್ರಾಫಿಕ್ ಮುನ್ಸೂಚನೆ",
+  "reserveSpot": "ಪಾರ್ಕಿಂಗ್ ಸ್ಲಾಟ್ ಬುಕ್ ಮಾಡಿ",
+  "payNow": "Razorpay ಮೂಲಕ ಪಾವತಿಸಿ",
+  "activeBooking": "ಸಕ್ರಿಯ ಪಾರ್ಕಿಂಗ್ ಬುಕಿಂಗ್",
+  "qrPassTitle": "ಪ್ರವೇಶ / ನಿರ್ಗಮನ QR ಪಾಸ್",
+  "notificationsTitle": "ಸ್ಮಾರ್ಟ್ ಸೂಚನೆಗಳು",
+  "profileTitle": "ಬಳಕೆದಾರರ ಪ್ರೊಫೈಲ್",
+  "settingsTitle": "ಆ್ಯಪ್ ಸಂಯೋಜನೆಗಳು",
+  "selectLanguage": "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ"
+}

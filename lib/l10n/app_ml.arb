@@ -1,0 +1,17 @@
+{
+  "@@locale": "ml",
+  "appName": "സ്മാർട്ട്പാർക്ക് AI",
+  "welcomeTitle": "AI വഴി എളുപ്പത്തിൽ പാർക്കിംഗ് കണ്ടെത്തൂ",
+  "welcomeSubtitle": "തത്സമയ പാർക്കിംഗ്, മികച്ച റൂട്ടുകൾ, അതിവേഗ ബുക്കിംഗ്.",
+  "searchPlaceholder": "സ്ഥലം വഴി പാർക്കിംഗ് തിരയുക...",
+  "aiRecommendation": "AI പാർക്കിംഗ് ശുപാർശ",
+  "trafficPrediction": "ട്രാഫിക് മുന്നറിയിപ്പ്",
+  "reserveSpot": "പാർക്കിംഗ് സ്ലോട്ട് ബുക്ക് ചെയ്യുക",
+  "payNow": "Razorpay വഴി പണം നൽകുക",
+  "activeBooking": "സജീവ പാർക്കിംഗ് ബുക്കിംഗ്",
+  "qrPassTitle": "പ്രവേശന / നിർഗ്ഗമന QR പാസ്",
+  "notificationsTitle": "സ്മാർട്ട് അറിയിപ്പുകൾ",
+  "profileTitle": "പ്രൊഫൈൽ",
+  "settingsTitle": "ആപ്പ് ക്രമീകരണങ്ങൾ",
+  "selectLanguage": "ഭാഷ തിരഞ്ഞെടുക്കുക"
+}
