@@ -16,6 +16,8 @@ class RouteNames {
   static const String history = 'history';
   static const String notifications = 'notifications';
   static const String profile = 'profile';
+  static const String vehicles = 'vehicles';
+  static const String savedPayments = 'savedPayments';
   static const String settings = 'settings';
   static const String language = 'language';
   static const String help = 'help';

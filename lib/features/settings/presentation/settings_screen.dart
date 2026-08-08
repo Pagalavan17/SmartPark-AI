@@ -52,7 +52,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       secondary: const Icon(Icons.notifications_active_outlined, color: AppColors.primary),
                       title: Text('Push Notifications', style: AppTextStyles.bodyLarge),
                       value: _notificationsEnabled,
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       onChanged: (val) => setState(() => _notificationsEnabled = val),
                     ),
                     const Divider(height: 1),
@@ -60,7 +60,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       secondary: const Icon(Icons.dark_mode_outlined, color: AppColors.primary),
                       title: Text('Dark Theme', style: AppTextStyles.bodyLarge),
                       value: isDarkMode,
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       onChanged: (val) {
                         ref.read(isDarkModeProvider.notifier).state = val;
                       },

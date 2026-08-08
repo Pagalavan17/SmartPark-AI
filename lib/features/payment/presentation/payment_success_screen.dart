@@ -25,7 +25,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.12),
+                  color: AppColors.success.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

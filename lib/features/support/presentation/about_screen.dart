@@ -30,7 +30,7 @@ class AboutScreen extends StatelessWidget {
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.12),
+                        color: AppColors.primary.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.local_parking_rounded, size: 52, color: AppColors.primary),
@@ -79,10 +79,10 @@ class AboutScreen extends StatelessWidget {
               const SizedBox(height: 10),
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: Column(
-                    children: const [
+                    children: [
                       _FeatureRow(title: 'Real-Time Slot Detection', desc: 'Predictive occupancy tracking across parking decks'),
                       Divider(height: 20),
                       _FeatureRow(title: 'AI Traffic Optimization', desc: 'Congestion forecast to suggest fastest parking routes'),

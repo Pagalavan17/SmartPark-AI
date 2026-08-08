@@ -11,7 +11,6 @@ class EnvConfig {
       case Environment.staging:
         return 'STAGING_GOOGLE_MAPS_KEY';
       case Environment.dev:
-      default:
         return 'DEV_GOOGLE_MAPS_KEY';
     }
   }
@@ -22,7 +21,6 @@ class EnvConfig {
         return 'rzp_live_PROD_KEY';
       case Environment.staging:
       case Environment.dev:
-      default:
         return 'rzp_test_MOCK_KEY';
     }
   }

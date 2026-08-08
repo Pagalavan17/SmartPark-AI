@@ -6,7 +6,7 @@ import '../constants/app_text_styles.dart';
 /// Reusable Primary Action Button for SmartPark AI
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final IconData? icon;
   final double? width;

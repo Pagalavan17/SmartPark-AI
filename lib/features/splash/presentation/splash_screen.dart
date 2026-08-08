@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -5,6 +6,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../core/widgets/loading_indicator.dart';
 
 /// Splash Screen for SmartPark AI
+/// Checks persistent Firebase session and navigates accordingly.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -12,7 +14,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -35,12 +38,44 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Auto navigation to Onboarding Screen after 2.5 seconds
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        context.go('/onboarding');
-      }
-    });
+    // Navigate after animation completes
+    Future.delayed(const Duration(milliseconds: 2500), _navigate);
+  }
+
+  Future<void> _navigate() async {
+    if (!mounted) return;
+
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser == null) {
+      // No session — go to onboarding
+      context.go('/onboarding');
+      return;
+    }
+
+    // Reload to get fresh emailVerified state
+    try {
+      await firebaseUser.reload();
+    } catch (_) {}
+
+    if (!mounted) return;
+    final refreshed = FirebaseAuth.instance.currentUser;
+    if (refreshed == null) {
+      context.go('/login');
+      return;
+    }
+
+    // Check provider
+    final isGoogleUser =
+        refreshed.providerData.any((p) => p.providerId == 'google.com');
+    final isEmailVerified = refreshed.emailVerified;
+
+    if (isGoogleUser || isEmailVerified) {
+      context.go('/home');
+    } else {
+      // Email user not yet verified
+      context.go('/verify-email');
+    }
   }
 
   @override
@@ -80,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
+                              color: Colors.black.withValues(alpha: 0.15),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),

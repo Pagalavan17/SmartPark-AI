@@ -43,48 +43,50 @@ class LanguageScreen extends ConsumerWidget {
         onBackPressed: () => context.go('/settings'),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(AppConstants.largePadding),
-          itemCount: _languages.length,
-          itemBuilder: (context, index) {
-            final lang = _languages[index];
-            final isSelected = lang.code == activeCode;
-
-            return Card(
-              elevation: isSelected ? 3 : 1,
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  width: 2,
-                ),
-              ),
-              child: ListTile(
-                onTap: () {
-                  ref.read(activeLanguageCodeProvider.notifier).state = lang.code;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('App language changed to ${lang.name}')),
-                  );
-                },
-                title: Text(
-                  lang.nativeName,
-                  style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(lang.name, style: AppTextStyles.bodySmall),
-                trailing: Radio<String>(
-                  value: lang.code,
-                  groupValue: activeCode,
-                  activeColor: AppColors.primary,
-                  onChanged: (val) {
-                    if (val != null) {
-                      ref.read(activeLanguageCodeProvider.notifier).state = val;
-                    }
-                  },
-                ),
-              ),
-            );
+        child: RadioGroup<String>(
+          groupValue: activeCode,
+          onChanged: (val) {
+            if (val != null) {
+              ref.read(activeLanguageCodeProvider.notifier).state = val;
+            }
           },
+          child: ListView.builder(
+            padding: const EdgeInsets.all(AppConstants.largePadding),
+            itemCount: _languages.length,
+            itemBuilder: (context, index) {
+              final lang = _languages[index];
+              final isSelected = lang.code == activeCode;
+
+              return Card(
+                elevation: isSelected ? 3 : 1,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.primary : Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: ListTile(
+                  onTap: () {
+                    ref.read(activeLanguageCodeProvider.notifier).state = lang.code;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('App language changed to ${lang.name}')),
+                    );
+                  },
+                  title: Text(
+                    lang.nativeName,
+                    style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(lang.name, style: AppTextStyles.bodySmall),
+                  trailing: Radio<String>(
+                    value: lang.code,
+                    activeColor: AppColors.primary,
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

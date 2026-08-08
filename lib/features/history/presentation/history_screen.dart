@@ -1,158 +1,101 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../core/widgets/custom_search_bar.dart';
-import '../../../core/widgets/booking_card.dart';
-import '../../../core/widgets/custom_app_bar.dart';
-import '../../../core/widgets/custom_bottom_nav_bar.dart';
+import '../../../core/widgets/app_navigation_drawer.dart';
 
-/// Booking History & Active Reservations Screen
-class HistoryScreen extends StatefulWidget {
+import '../../../services/payment/payment_providers.dart';
+
+/// Complete Production Payment History Screen
+class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    final txAsync = ref.watch(userTransactionsProvider('user_1'));
 
-class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int _currentNavIndex = 2; // Bookings tab in bottom nav
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onNavTapped(int index) {
-    setState(() => _currentNavIndex = index);
-    switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/search');
-        break;
-      case 2:
-        break; // Already on History
-      case 3:
-        context.go('/notifications');
-        break;
-      case 4:
-        context.go('/profile');
-        break;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: CustomAppBar(
-        title: 'Booking History',
-        showBackButton: false,
-        onBackPressed: () => context.go('/home'),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
-              child: CustomSearchBar(hintText: 'Search bookings by spot or ID...'),
-            ),
-            const SizedBox(height: 14),
-
-            // Tab Bar
-            TabBar(
-              controller: _tabController,
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              indicatorColor: AppColors.primary,
-              indicatorWeight: 3,
-              labelStyle: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
-              tabs: const [
-                Tab(text: 'Upcoming'),
-                Tab(text: 'Completed'),
-                Tab(text: 'Cancelled'),
-              ],
-            ),
-            const SizedBox(height: 10),
-
-            // Tab View List Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Upcoming / Active Bookings Tab
-                  ListView(
-                    padding: const EdgeInsets.all(AppConstants.defaultPadding),
-                    children: [
-                      BookingCard(
-                        parkingSpotName: 'Metro Cyber Park',
-                        slotNumber: 'Slot A-14',
-                        dateText: 'Oct 24, 2026',
-                        timeRangeText: '10:00 AM - 02:00 PM',
-                        status: 'Active',
-                        onViewQrPass: () => context.go('/qr-pass'),
-                      ),
-                    ],
-                  ),
-
-                  // Completed Bookings Tab
-                  ListView(
-                    padding: const EdgeInsets.all(AppConstants.defaultPadding),
-                    children: [
-                      BookingCard(
-                        parkingSpotName: 'Phoenix Marketcity Deck',
-                        slotNumber: 'Slot B-08',
-                        dateText: 'Oct 18, 2026',
-                        timeRangeText: '04:00 PM - 07:00 PM',
-                        status: 'Completed',
-                        onViewQrPass: () => context.go('/qr-pass'),
-                      ),
-                      BookingCard(
-                        parkingSpotName: 'Express Avenue Plaza',
-                        slotNumber: 'Slot C-22',
-                        dateText: 'Oct 12, 2026',
-                        timeRangeText: '01:00 PM - 03:00 PM',
-                        status: 'Completed',
-                        onViewQrPass: () => context.go('/qr-pass'),
-                      ),
-                    ],
-                  ),
-
-                  // Cancelled Bookings Tab
-                  ListView(
-                    padding: const EdgeInsets.all(AppConstants.defaultPadding),
-                    children: [
-                      BookingCard(
-                        parkingSpotName: 'Forum Mall Parking',
-                        slotNumber: 'Slot D-05',
-                        dateText: 'Sep 29, 2026',
-                        timeRangeText: '11:00 AM - 01:00 PM',
-                        status: 'Cancelled',
-                        onViewQrPass: () => context.go('/qr-pass'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+      key: scaffoldKey,
+      drawer: const AppNavigationDrawer(currentRoute: '/history'),
+      appBar: AppBar(
+        title: const Text('Payment & Transaction History'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: _onNavTapped,
+      body: txAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error loading transactions: $err')),
+        data: (transactions) {
+          if (transactions.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.receipt_long_outlined, size: 64, color: AppColors.textSecondary),
+                  const SizedBox(height: 12),
+                  Text('No payment transactions found.', style: AppTextStyles.bodyLarge),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(AppConstants.defaultPadding),
+            itemCount: transactions.length,
+            itemBuilder: (context, index) {
+              final tx = transactions[index];
+              return Card(
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: AppColors.border),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: tx.status == 'Success'
+                        ? AppColors.success.withValues(alpha: 0.15)
+                        : AppColors.error.withValues(alpha: 0.15),
+                    child: Icon(
+                      tx.status == 'Success' ? Icons.check_circle : Icons.cancel,
+                      color: tx.status == 'Success' ? AppColors.success : AppColors.error,
+                      size: 20,
+                    ),
+                  ),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Pass #${tx.transactionId}', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                      Text('₹${tx.amount.toInt()}', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text('Method: ${tx.paymentMethod}', style: AppTextStyles.caption),
+                      Text('Date: ${tx.timestamp.day}/${tx.timestamp.month}/${tx.timestamp.year}', style: AppTextStyles.caption),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.download_rounded, color: AppColors.primary, size: 20),
+                    tooltip: 'Download Invoice',
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Downloading invoice for #${tx.transactionId}...')),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

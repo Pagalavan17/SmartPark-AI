@@ -1,129 +1,88 @@
-# SmartPark AI 🚗🤖
+# SmartPark AI - AI-Driven Smart Parking Platform 🚗⚡
 
-**SmartPark AI** is an AI-powered multilingual smart parking and navigation Android mobile application built with Flutter, Riverpod, GoRouter, Firebase, Google Maps, and Razorpay.
+[![Flutter](https://img.shields.io/badge/Flutter-3.12.2-blue.svg)](https://flutter.dev)
+[![Riverpod](https://img.shields.io/badge/State_Management-Riverpod-purple.svg)](https://riverpod.dev)
+[![Firebase](https://img.shields.io/badge/Backend-Firebase-orange.svg)](https://firebase.google.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+SmartPark AI is an intelligent, edge-assisted smart parking optimization platform built with **Flutter**, **Clean Architecture**, **Riverpod**, **Firebase**, **Google Maps**, **Razorpay**, and an **Explainable AI Engine**.
 
 ---
 
-## 🏛️ Clean Architecture Blueprint
+## 🌟 Key Features
 
-The project is structured according to **Feature-First Clean Architecture**, ensuring strict separation of concerns, scalability, testability, and maintainability.
+- **🤖 Pluggable AI Adapter Architecture**: Decoupled interface supporting Local Edge ML (TFLite/ONNX), Google Gemini AI, and offline Mock adapters.
+- **📡 Smart Sensor Layer & Digital Twin**: Ingests live telemetry from IoT sensors, CCTV, ANPR, RFID, and Barrier Gates.
+- **🗺️ Live Google Maps Navigation**: Color-coded live occupancy markers, AI Smart Pick highlights, and route polyline overlays.
+- **📱 Smart 5-Step Reservation Wizard**: Time selection, vehicle filter, dynamic surge price breakdown, and digital QR pass generation (`qr_flutter`).
+- **🔔 FCM & Local Push Notification Engine**: Automated 15-min reservation reminders, 10-min slot expiry warnings, and adaptive re-routing alerts.
+- **💳 Razorpay Payment Platform**: Secure UPI (GPay, PhonePe, Paytm), Credit Cards, Net Banking, and digital invoice generator.
+- **💬 Floating AI Assistant**: Conversational FAB modal providing context-aware answers, voice input simulation, and action execution.
+- **📊 Enterprise Admin Dashboard**: Executive platform summary, microservice operational status, incident log resolution, and report export (PDF, CSV, Excel).
+
+---
+
+## 🏗️ Architecture Overview
+
+SmartPark AI strictly follows **Clean Architecture**:
 
 ```
-smart_park_ai/
-├── android/                     # Android Native Configuration & Permissions
-├── ios/                         # iOS Native Configuration & Permissions
-├── assets/                      # App Assets (Images, Icons, Lottie, Fonts)
-├── lib/
-│   ├── main.dart                # App Entry Point & ProviderScope Binding
-│   ├── app.dart                 # MaterialApp.router, Theme, and Locale Setup
-│   ├── core/                    # App Infrastructure & Shared Design System
-│   │   ├── constants/           # Colors (#1565C0, #42A5F5, #F5F7FA), Typography, Endpoints
-│   │   ├── theme/               # Material Design 3 Light & Dark Themes (20px Radius)
-│   │   ├── routes/              # GoRouter Configuration with 18 Routes & Transitions
-│   │   ├── services/            # Firebase, Maps, Razorpay, AI Engine & Storage Interfaces
-│   │   ├── utils/               # Formatters, Validators, Location Helpers
-│   │   └── widgets/             # 12 Reusable MD3 Component Widgets
-│   ├── features/                # 12 Feature Modules (data/domain/presentation)
-│   │   ├── authentication/
-│   │   ├── home/
-│   │   ├── search/
-│   │   ├── booking/
-│   │   ├── payment/
-│   │   ├── parking/
-│   │   ├── history/
-│   │   ├── notifications/
-│   │   ├── profile/
-│   │   ├── settings/
-│   │   ├── language/
-│   │   └── support/
-│   ├── models/                  # Shared Domain Data Models (Equatable)
-│   ├── providers/               # Global Riverpod DI & State Providers
-│   ├── repositories/            # Base Repository Pattern
-│   └── l10n/                    # Multilingual Translations (EN, TA, HI, ML, KN)
-└── test/                        # Unit, Widget, and Integration Tests
+lib/
+├── core/                   # Design system, constants, errors, routes, and services
+├── models/                 # Immutable data models with serialization
+├── repositories/           # Abstract interfaces & Firestore implementations
+├── providers/              # Central Riverpod Dependency Injection
+├── services/
+│   ├── ai/                 # Pluggable AI Adapters & Decision Engine
+│   ├── sensor/             # Gateway, Telemetry Dispatcher, Simulation & Digital Twin
+│   ├── notification/       # FCM & Local Notification Scheduler
+│   └── payment/            # Razorpay & Invoice Engine
+└── features/               # Modular Clean Architecture Feature Modules
+    ├── home/               # Dashboard & Category Filters
+    ├── search/             # Live Google Parking Map & Search
+    ├── parking/            # Parking Details & 5-Step Wizard
+    ├── booking/            # Active Bookings
+    ├── payment/            # Checkout & Payment History
+    ├── qr_pass/            # Digital QR Pass
+    ├── notifications/      # Notification Center
+    ├── admin/              # Enterprise Admin Dashboard
+    └── assistant/          # Floating AI Assistant
 ```
 
 ---
 
-## 🎨 Design System & Theme Specifications
+## 🚀 Getting Started
 
-- **UI Framework**: Material Design 3 (MD3) with Google Fonts Poppins.
-- **Primary Color**: `#1565C0`
-- **Secondary Color**: `#42A5F5`
-- **Background Color**: `#F5F7FA`
-- **Card Fill**: `#FFFFFF`
-- **Border Radius**: `20px`
+### Prerequisites
+- Flutter SDK `^3.12.2`
+- Dart SDK `^3.12.2`
+- Android Studio / VS Code
 
----
-
-## 🧩 Included Reusable Widgets (`lib/core/widgets/`)
-
-1. **`PrimaryButton`**: High-emphasis action button with loading state support.
-2. **`SecondaryButton`**: Outlined secondary action button.
-3. **`CustomTextField`**: MD3 rounded text input field with validation support.
-4. **`CustomSearchBar`**: Clean search bar with filter trigger icon.
-5. **`ParkingCard`**: Parking spot preview card with live occupancy indicator & AI match score.
-6. **`AiRecommendationCard`**: Gradient card highlighting top AI recommendation & time savings.
-7. **`TrafficCard`**: Real-time traffic alert card with congestion indicator.
-8. **`BookingCard`**: Active & historical reservation card with QR Pass button.
-9. **`NotificationCard`**: Feed item card for real-time alerts.
-10. **`CustomBottomNavBar`**: Floating rounded bottom navigation bar.
-11. **`LoadingIndicator`**: Centralized progress indicator with text status.
-12. **`CustomAppBar`**: Clean custom top app bar with back navigation.
-
----
-
-## 🌐 Localization Support
-
-Configured for **5 Indian Languages**:
-- 🇬🇧 **English** (`en`)
-- 🇮🇳 **Tamil** (`ta`)
-- 🇮🇳 **Hindi** (`hi`)
-- 🇮🇳 **Malayalam** (`ml`)
-- 🇮🇳 **Kannada** (`kn`)
-
-Translations are stored in `lib/l10n/app_*.arb` files.
-
----
-
-## 🤖 AI Module Interfaces (`IAIEngineService`)
-
-The AI module service interface defines standard signatures for:
-1. **AI Parking Recommendation**: `getRecommendedParkingSpots()`
-2. **Traffic Prediction**: `predictTrafficConditions()`
-3. **Smart Route Recommendation**: `calculateOptimalRoute()`
-4. **Parking Occupancy Prediction**: `predictSlotOccupancyRate()`
-
----
-
-## ⚙️ How to Setup & Run
-
-1. **Install Dependencies**:
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/smartpark-ai/app.git
+   cd smartpark_ai
+   ```
+2. Install dependencies:
    ```bash
    flutter pub get
    ```
-
-2. **Generate Localizations & Code**:
+3. Run static code analyzer:
    ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
+   flutter analyze
    ```
-
-3. **Firebase Setup**:
-   - Download `google-services.json` from Firebase Console.
-   - Place it inside `android/app/`.
-
-4. **Google Maps API Key**:
-   - Update `GOOGLE_MAPS_API_KEY` in `android/app/src/main/AndroidManifest.xml`.
-
-5. **Run Application**:
+4. Launch application:
    ```bash
    flutter run
    ```
 
 ---
 
-## 🧪 Verification & Code Health
+## 📜 Documentation & Specifications
+Detailed architectural diagrams, Digital Twin pipelines, and Patent novelty claims are available in [docs/ARCHITECTURE_AND_INNOVATION.md](file:///c:/Pagalavan/Projects/smartpark_ai/docs/ARCHITECTURE_AND_INNOVATION.md).
 
-- Clean Architecture & Feature-First modularization strictly enforced.
-- Fully typed Dart null-safety compliance.
-- Test suites bootstrapped under `test/`.
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.

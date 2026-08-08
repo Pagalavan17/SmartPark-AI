@@ -33,7 +33,7 @@ class NotificationCard extends StatelessWidget {
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
           child: const Icon(Icons.notifications_active, color: AppColors.primary),
         ),
         title: Text(

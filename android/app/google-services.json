@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "538147845713",
+    "project_id": "smartpark-ai-c4608",
+    "storage_bucket": "smartpark-ai-c4608.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538147845713:android:4f0970f5685329dceeaa70",
+        "android_client_info": {
+          "package_name": "com.example.smartpark_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538147845713-g5a1mhtammgjld54h5odj7sc7djtlps9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smartpark_ai",
+            "certificate_hash": "818e4bd78ca88eb4e5e7511b420a6189a22e73c0"
+          }
+        },
+        {
+          "client_id": "538147845713-igr65maj0d7n36vn0iia6ltjlh49f0ev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ0DksSPMTlw8yRPtNiIPPnITveAgf1kk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538147845713-igr65maj0d7n36vn0iia6ltjlh49f0ev.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "538147845713-qsiq6c234t91itueetdaikjgn6frfnsu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smartparkAi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

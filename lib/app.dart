@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:smartpark_ai/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/routes/app_router.dart';
 import 'providers/app_state_providers.dart';
@@ -31,6 +32,7 @@ class SmartParkApp extends ConsumerWidget {
         Locale('kn', ''), // Kannada
       ],
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

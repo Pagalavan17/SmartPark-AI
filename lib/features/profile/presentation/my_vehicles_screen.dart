@@ -91,7 +91,7 @@ class MyVehiclesScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.12),
+                      color: AppColors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text('DEFAULT', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
@@ -114,7 +114,7 @@ class MyVehiclesScreen extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.delete_outline, size: 16, color: AppColors.error),
-                  label: Text('Delete', style: TextStyle(color: AppColors.error)),
+                  label: const Text('Delete', style: TextStyle(color: AppColors.error)),
                 ),
               ],
             ),

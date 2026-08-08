@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
@@ -6,16 +7,18 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import 'auth_controller.dart';
 
-/// Clean Architecture Register Screen for SmartPark AI
-class RegisterScreen extends StatefulWidget {
+/// Production Registration Screen — creates Firebase account, Firestore profile,
+/// sends verification email, then navigates to VerifyEmailScreen.
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -26,7 +29,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -38,58 +40,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please accept the Terms & Conditions to proceed.')),
+        const SnackBar(
+          content: Text('Please accept the Terms & Conditions to proceed.'),
+          backgroundColor: AppColors.warning,
+        ),
       );
       return;
     }
 
-    if (_formKey.currentState?.validate() ?? false) {
-      if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match.')),
-        );
-        return;
-      }
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-      setState(() => _isLoading = true);
+    final controller = ref.read(authControllerProvider.notifier);
+    final success = await controller.register(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      phoneNumber: _phoneController.text.trim(),
+    );
 
-      // Simulate Account Creation & Navigation
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          context.go('/home');
-        }
-      });
+    if (!mounted) return;
+
+    if (success) {
+      // Navigate to email verification screen
+      context.go('/verify-email');
     }
+    // Errors are handled by listener below
   }
 
   @override
   Widget build(BuildContext context) {
+    // Listen for errors
+    ref.listen<AuthState>(authControllerProvider, (prev, next) {
+      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        ref.read(authControllerProvider.notifier).clearError();
+      }
+    });
+
+    final isLoading = ref.watch(authControllerProvider).isLoading;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => context.go('/login'),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              color: AppColors.textPrimary, size: 20),
+          onPressed: isLoading ? null : () => context.go('/login'),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppConstants.largePadding),
+          padding:
+              const EdgeInsets.symmetric(horizontal: AppConstants.largePadding),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Create Account 🚀',
-                  style: AppTextStyles.headingLarge,
-                ),
+                Text('Create Account 🚀', style: AppTextStyles.headingLarge),
                 const SizedBox(height: 6),
                 Text(
                   'Join SmartPark AI for seamless smart parking',
@@ -97,17 +115,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 28),
 
-                // Name Input
+                // Full Name
                 CustomTextField(
                   labelText: 'Full Name',
                   hintText: 'John Doe',
                   controller: _nameController,
                   prefixIcon: Icons.person_outline,
-                  validator: (val) => val == null || val.isEmpty ? 'Name is required' : null,
+                  validator: Validators.validateName,
                 ),
                 const SizedBox(height: 16),
 
-                // Email Input
+                // Email
                 CustomTextField(
                   labelText: 'Email Address',
                   hintText: 'name@example.com',
@@ -118,9 +136,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Phone Input
+                // Phone (optional)
                 CustomTextField(
-                  labelText: 'Phone Number',
+                  labelText: 'Phone Number (optional)',
                   hintText: '+91 9876543210',
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
@@ -129,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Input
+                // Password
                 CustomTextField(
                   labelText: 'Password',
                   hintText: '••••••••',
@@ -139,41 +157,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: Validators.validatePassword,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: AppColors.textLight,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Password hint
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    '8+ chars, uppercase, lowercase, number, special character',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textSecondary),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // Confirm Password Input
+                // Confirm Password
                 CustomTextField(
                   labelText: 'Confirm Password',
                   hintText: '••••••••',
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   prefixIcon: Icons.lock_reset_outlined,
-                  validator: Validators.validatePassword,
+                  validator: Validators.validateConfirmPassword(
+                      _passwordController.text),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: AppColors.textLight,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
+                    onPressed: () => setState(() =>
+                        _obscureConfirmPassword = !_obscureConfirmPassword),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // Terms & Conditions Checkbox
+                // Terms & Conditions
                 Row(
                   children: [
                     SizedBox(
@@ -185,16 +212,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        onChanged: (val) {
-                          setState(() => _acceptTerms = val ?? false);
-                        },
+                        onChanged: isLoading
+                            ? null
+                            : (val) =>
+                                setState(() => _acceptTerms = val ?? false),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'I agree to the Terms & Conditions and Privacy Policy',
-                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
                       ),
                     ),
                   ],
@@ -204,8 +233,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Create Account Button
                 PrimaryButton(
                   text: 'Create Account',
-                  isLoading: _isLoading,
-                  onPressed: _handleRegister,
+                  isLoading: isLoading,
+                  onPressed: isLoading ? null : _handleRegister,
                 ),
                 const SizedBox(height: 24),
 
@@ -213,9 +242,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account?', style: AppTextStyles.bodyMedium),
+                    Text('Already have an account?',
+                        style: AppTextStyles.bodyMedium),
                     TextButton(
-                      onPressed: () => context.go('/login'),
+                      onPressed:
+                          isLoading ? null : () => context.go('/login'),
                       child: Text(
                         'Login',
                         style: AppTextStyles.bodyMedium.copyWith(
