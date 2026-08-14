@@ -59,3 +59,6 @@ firebase-adminsdk*.json
 
 # Flutter generated build marker
 **/.last_build_id
+
+# Firebase local state
+.firebase/
