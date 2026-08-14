@@ -13,7 +13,6 @@ class SavedPaymentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: 'Saved Payment Methods',
         onBackPressed: () => context.go('/profile'),

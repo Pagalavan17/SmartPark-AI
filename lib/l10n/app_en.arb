@@ -3,15 +3,309 @@
   "appName": "SmartPark AI",
   "welcomeTitle": "Find Parking Effortlessly with AI",
   "welcomeSubtitle": "Real-time parking, smart routes, and instant booking at your fingertips.",
-  "searchPlaceholder": "Search parking by location or venue...",
+  "loading": "Loading...",
+  "error": "Error",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "save": "Save",
+  "done": "Done",
+  "back": "Back",
+  "ok": "OK",
+  "viewAll": "View All",
+  "search": "Search",
+  "searchPlaceholder": "Search destination or parking...",
+  "searchDestination": "Search destination or landmark...",
+
   "aiRecommendation": "AI Parking Recommendation",
+  "aiRecommended": "AI Recommended",
   "trafficPrediction": "Traffic & Congestion Alert",
+  "nearest": "Nearest",
+  "cheapest": "Cheapest",
+  "evCharging": "EV Charging",
+  "covered": "Covered",
+  "aiSmartPick": "AI Smart Pick",
+  "all": "All",
+  "currentLocation": "Current location",
+  "parking": "Parking",
+  "nearbyFacilities": "Nearby Facilities",
+  "liveParkingMap": "Live Parking Map",
+  "parkingAvailable": "Parking Available",
+  "noParkingAvailable": "No parking locations available.",
+  "unableToLoadParking": "Unable to load parking locations.\nCheck your internet connection and try again.",
+
+  "parkingDetails": "Parking Details",
+  "parkingLocation": "Parking Location",
+  "distance": "Distance",
+  "walkingTime": "Walking time",
+  "availableSlots": "Available slots",
+  "occupiedSlots": "Occupied slots",
+  "totalSlots": "Total slots",
+  "price": "Price",
+  "perHour": "per hour",
+  "ratePerHour": "₹{rate}/hr",
+  "@ratePerHour": {
+    "placeholders": {
+      "rate": {"type": "num"}
+    }
+  },
+  "slotsFree": "{count} slots free",
+  "@slotsFree": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "minsWalk": "{count} mins walk",
+  "@minsWalk": {
+    "placeholders": {
+      "count": {"type": "num"}
+    }
+  },
+  "kmAway": "{count} km",
+  "@kmAway": {
+    "placeholders": {
+      "count": {"type": "num"}
+    }
+  },
+  "aiScore": "{score}% AI Score",
+  "@aiScore": {
+    "placeholders": {
+      "score": {"type": "num"}
+    }
+  },
+  "rating": "Rating",
+  "totalCapacity": "Total Capacity",
+  "hourlyRate": "Hourly Rate",
+
   "reserveSpot": "Reserve Parking Slot",
-  "payNow": "Pay with Razorpay",
+  "reserveNow": "Reserve Now",
+  "booking": "Booking",
+  "reservation": "Reservation",
   "activeBooking": "Active Parking Reservation",
-  "qrPassTitle": "Entry / Exit QR Pass",
-  "notificationsTitle": "Smart Notifications",
+  "selectDuration": "Select Duration",
+  "selectVehicle": "Select Vehicle",
+  "durationHours": "{count} Hours",
+  "@durationHours": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "startTime": "Start Time",
+  "endTime": "End Time",
+  "totalAmount": "Total Amount",
+  "proceedToPay": "Proceed to Pay",
+  "bookingSuccessful": "Booking successful!",
+  "bookingFailed": "Booking failed. Please try again.",
+  "reservationConfirmed": "Reservation Confirmed",
+  "spotReservedSuccessfully": "Your parking spot has been reserved successfully.",
+
+  "payment": "Payment",
+  "payNow": "Pay Now",
+  "payWithRazorpay": "Pay with Razorpay",
+  "amount": "Amount",
+  "paymentSuccessful": "Payment Successful!",
+  "paymentFailed": "Payment failed. Please try again.",
+  "transaction": "Transaction",
+  "transactionId": "Transaction ID",
+  "paymentMethod": "Payment Method",
+  "upi": "UPI",
+  "card": "Credit / Debit Card",
+  "netBanking": "Net Banking",
+  "wallet": "Mobile Wallet",
+  "retryPayment": "Retry Payment",
+
+  "qrPassTitle": "Digital QR Pass",
+  "qrPass": "QR Pass",
+  "showQr": "Show QR",
+  "scanQr": "Scan QR",
+  "scanQrAtGate": "Scan this QR code at the parking gate",
+  "bookingId": "Booking ID",
+  "validUntil": "Valid Until",
+  "download": "Download",
+  "share": "Share",
+  "passActive": "Active Pass",
+
   "profileTitle": "User Profile",
   "settingsTitle": "App Settings",
-  "selectLanguage": "Select Language"
+  "settings": "Settings",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "tamil": "Tamil",
+  "hindi": "Hindi",
+  "malayalam": "Malayalam",
+  "kannada": "Kannada",
+  "darkMode": "Dark Mode",
+  "themeLight": "Light Mode",
+  "themeDark": "Dark Mode",
+  "switchToLightMode": "Switch to Light Mode",
+  "switchToDarkMode": "Switch to Dark Mode",
+  "notifications": "Notifications",
+  "notificationsTitle": "Smart Notifications",
+  "helpSupport": "Help & Support",
+  "logout": "Logout",
+  "myBookings": "My Bookings",
+  "myVehicles": "My Vehicles",
+  "editProfile": "Edit Profile",
+
+  "navigate": "Navigate",
+  "startNavigation": "Start Navigation",
+  "destination": "Destination",
+  "home": "Home",
+  "liveMap": "Live Map",
+  "bookingHistory": "Booking History",
+
+  "locationPermissionRequired": "Location permission is required to find nearby parking.",
+  "locationPermissionDenied": "Location permission denied.",
+  "internetConnectionRequired": "Internet connection required.",
+  "somethingWentWrong": "Something went wrong. Please try again.",
+  "pleaseTryAgain": "Please try again.",
+
+  "adminDashboard": "Enterprise AI Admin Dashboard",
+  "platformExecutiveSummary": "Platform Executive Summary",
+  "exportReports": "Export Reports",
+  "exportPdfReport": "Export PDF Report",
+  "exportCsvData": "Export CSV Data",
+  "exportExcelSheet": "Export Excel Sheet",
+  "exportingReport": "Exporting {timeframe} Report as {format}...",
+  "@exportingReport": {
+    "placeholders": {
+      "timeframe": {"type": "String"},
+      "format": {"type": "String"}
+    }
+  },
+  "today": "Today",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "activeSensors": "Active Sensors",
+  "systemHealth": "System Health",
+  "occupancyRate": "Occupancy Rate",
+  "totalRevenue": "Total Revenue",
+  "recentIncidents": "Recent Incidents",
+  "noIncidentsFound": "No incidents reported.",
+
+  "paymentHistoryTitle": "Payment & Transaction History",
+  "transactionHistory": "Transaction History",
+  "noTransactionsFound": "No payment transactions found.",
+  "downloadInvoice": "Download Invoice",
+  "downloadingInvoice": "Downloading invoice for #{id}...",
+  "@downloadingInvoice": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "passNumber": "Pass #{id}",
+  "@passNumber": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "methodLabel": "Method: {method}",
+  "@methodLabel": {
+    "placeholders": {
+      "method": {"type": "String"}
+    }
+  },
+  "dateLabel": "Date: {date}",
+  "@dateLabel": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "statusSuccess": "Success",
+  "statusFailed": "Failed",
+  "statusPending": "Pending",
+
+  "markAllAsRead": "Mark all as read",
+  "allNotificationsMarkedRead": "All notifications marked as read.",
+  "noNotificationsAvailable": "No notifications available.",
+  "unableToLoadNotifications": "Unable to load notifications.",
+  "categoryAll": "All",
+  "categoryReservation": "Reservation",
+  "categoryAi": "AI",
+  "categoryAdaptive": "Adaptive",
+  "categoryExpiry": "Expiry",
+  "categorySurge": "Surge",
+  "aiSmartPickAvailable": "AI Smart Pick Available",
+  "lowTrafficRouteDetected": "Low traffic route detected...",
+  "parkingExpiryWarning": "Parking Expiry Warning",
+  "peakSurgeAlert": "Peak Surge Alert",
+  "minsAgo": "{count} mins ago",
+  "@minsAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "lowestTraffic": "Lowest Traffic",
+  "openNow": "Open Now",
+  "locationServicesDisabled": "Location services are disabled. Please enable GPS in device settings.",
+  "locationPermissionRequiredMsg": "Location permission is required to center the map on your position.",
+  "locationPermissionPermanentDeniedMsg": "Location permission is permanently denied.",
+  "aiAdaptiveRerouting": "AI Adaptive Re-routing",
+  "betterParkingFound": "Better Parking Found:",
+  "priceDifference": "Price difference:",
+  "acceptReroute": "Accept Reroute",
+  "decline": "Decline",
+  "openingGoogleMaps": "Opening Google Maps navigation...",
+
+  "parkingLotNotFound": "Parking Lot Not Found",
+  "unableToShareParking": "Unable to share parking link",
+  "googleMapsNotOpened": "Google Maps could not be opened. Please make sure Google Maps is installed.",
+  "lowestRouteTraffic": "Lowest predicted route traffic",
+  "walkingDistanceMeters": "Walking distance only {meters} meters",
+  "@walkingDistanceMeters": {
+    "placeholders": {
+      "meters": {"type": "int"}
+    }
+  },
+  "competitivePrice": "Competitive parking price",
+  "peakSurgePlus": "⚡ Peak Surge +{percent}%",
+  "@peakSurgePlus": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "highlySuitableLocation": "Highly suitable parking location with good availability.",
+  "stepProgress": "Step {step} of 5",
+  "@stepProgress": {
+    "placeholders": {
+      "step": {"type": "int"}
+    }
+  },
+  "smartReservationWizard": "Smart Reservation Wizard",
+  "selectArrivalTime": "1. Select Arrival Time",
+  "selectParkingDuration": "2. Select Parking Duration",
+  "selectVehicleStep": "3. Select Vehicle",
+  "reviewBookingSummary": "4. Review Booking Summary",
+  "instantEntryNow": "Now (Instant Entry)",
+  "vehicleTypeFilter": "Vehicle Type Filter",
+  "copiedToClipboard": "Reservation ID copied to clipboard!",
+  "viewFullPass": "View Full Pass",
+  "passIdLabel": "Pass ID: #{id}",
+  "@passIdLabel": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "slotAllocatedLabel": "Slot Allocated: {slot}",
+  "@slotAllocatedLabel": {
+    "placeholders": {
+      "slot": {"type": "String"}
+    }
+  },
+  "parkingAndReasoning": "PARKING & REASONING",
+  "userAndAccount": "USER & ACCOUNT",
+  "systemAndSupport": "SYSTEM & SUPPORT",
+  "aboutSmartPark": "About SmartPark AI",
+  "returnToHome": "Return To Home"
 }

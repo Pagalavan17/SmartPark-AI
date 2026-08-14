@@ -12,7 +12,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: 'About SmartPark AI',
         onBackPressed: () => context.go('/settings'),

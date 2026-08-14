@@ -5,14 +5,9 @@ class EnvConfig {
   static Environment currentEnv = Environment.dev;
 
   static String get googleMapsApiKey {
-    switch (currentEnv) {
-      case Environment.prod:
-        return 'PROD_GOOGLE_MAPS_KEY';
-      case Environment.staging:
-        return 'STAGING_GOOGLE_MAPS_KEY';
-      case Environment.dev:
-        return 'DEV_GOOGLE_MAPS_KEY';
-    }
+    const fromEnv = String.fromEnvironment('MAPS_API_KEY');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    return 'DEFAULT_MAPS_API_KEY';
   }
 
   static String get razorpayKeyId {

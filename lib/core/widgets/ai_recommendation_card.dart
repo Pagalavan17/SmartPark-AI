@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_text_styles.dart';
+import '../extensions/l10n_ai_helper.dart';
+import '../extensions/l10n_extension.dart';
 
 /// Reusable AI Recommendation Card component
 class AiRecommendationCard extends StatelessWidget {
@@ -20,6 +22,8 @@ class AiRecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -44,9 +48,13 @@ class AiRecommendationCard extends StatelessWidget {
             children: [
               const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              Text(
-                'AI Smart Pick',
-                style: AppTextStyles.headingSmall.copyWith(color: Colors.white),
+              Expanded(
+                child: Text(
+                  l10n.aiSmartPick,
+                  style: AppTextStyles.headingSmall.copyWith(color: Colors.white),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -60,20 +68,25 @@ class AiRecommendationCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            reasoningText,
+            context.localizeAiReasoning(reasoningText),
             style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Saves ~${timeSavedInMinutes.toInt()} mins',
-                style: AppTextStyles.caption.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  l10n.minsWalk(timeSavedInMinutes.toInt()),
+                  style: AppTextStyles.caption.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: onReserve,
                 style: ElevatedButton.styleFrom(
@@ -83,7 +96,7 @@ class AiRecommendationCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Quick Reserve'),
+                child: Text(l10n.reserveNow),
               ),
             ],
           ),

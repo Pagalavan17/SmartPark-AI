@@ -12,7 +12,6 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: 'Help & FAQ',
         onBackPressed: () => context.go('/settings'),

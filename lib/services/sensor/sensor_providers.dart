@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/digital_twin_model.dart';
@@ -44,9 +46,34 @@ final parkingStatusSynchronizerProvider = Provider<ParkingStatusSynchronizer>((r
   return synchronizer;
 });
 
-final digitalTwinStreamProvider = StreamProvider.family<DigitalTwinModel?, String>((ref, parkingId) {
+final digitalTwinStreamProvider = StreamProvider.family<DigitalTwinModel?, String>((ref, parkingId) async* {
+  final repo = ref.watch(digitalTwinRepositoryProvider);
   final sync = ref.watch(parkingStatusSynchronizerProvider);
-  return sync.onDigitalTwinUpdated.where((twin) => twin.parkingId == parkingId);
+
+  // 1. Initial fetch from repository with 10s timeout
+  try {
+    final initialTwin = await repo.getDigitalTwinForLot(parkingId).timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        throw TimeoutException('Digital Twin telemetry request timed out after 10s');
+      },
+    );
+    yield initialTwin;
+  } catch (e, st) {
+    debugPrint('digitalTwinStreamProvider initial fetch error for $parkingId: $e');
+    debugPrintStack(stackTrace: st);
+    rethrow;
+  }
+
+  // 2. Yield live updates from in-memory event stream
+  try {
+    await for (final twin in sync.onDigitalTwinUpdated.where((t) => t.parkingId == parkingId)) {
+      yield twin;
+    }
+  } catch (e, st) {
+    debugPrint('digitalTwinStreamProvider live stream update error for $parkingId: $e');
+    debugPrintStack(stackTrace: st);
+  }
 });
 
 final sensorHealthProvider = FutureProvider.family<List<SensorDataModel>, String>((ref, parkingId) {

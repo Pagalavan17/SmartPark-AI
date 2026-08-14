@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/widgets/app_navigation_drawer.dart';
 
 import '../../../services/notification/notification_providers.dart';
@@ -23,27 +24,67 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   static const List<String> _categories = ['All', 'Reservation', 'AI', 'Adaptive', 'Expiry', 'Surge'];
 
+  String _getCategoryLabel(BuildContext context, String cat) {
+    final l10n = context.l10n;
+    switch (cat.toLowerCase()) {
+      case 'all':
+        return l10n.categoryAll;
+      case 'reservation':
+        return l10n.categoryReservation;
+      case 'ai':
+        return l10n.categoryAi;
+      case 'adaptive':
+        return l10n.categoryAdaptive;
+      case 'expiry':
+        return l10n.categoryExpiry;
+      case 'surge':
+        return l10n.categorySurge;
+      default:
+        return cat;
+    }
+  }
+
+  String _localizeTitle(BuildContext context, String rawTitle) {
+    final l10n = context.l10n;
+    if (rawTitle.contains('Reservation Confirmed')) return l10n.reservationConfirmed;
+    if (rawTitle.contains('AI Smart Pick Available')) return l10n.aiSmartPickAvailable;
+    if (rawTitle.contains('Low traffic route detected')) return l10n.lowTrafficRouteDetected;
+    if (rawTitle.contains('Parking Expiry Warning')) return l10n.parkingExpiryWarning;
+    if (rawTitle.contains('Peak Surge Alert')) return l10n.peakSurgeAlert;
+    return rawTitle;
+  }
+
+  String _formatTime(BuildContext context, DateTime time) {
+    final l10n = context.l10n;
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 60) return l10n.minsAgo(diff.inMinutes < 1 ? 1 : diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
+    return '${time.day}/${time.month}/${time.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(userNotificationsProvider('user_1'));
     final repo = ref.watch(notificationRepositoryProvider);
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     return Scaffold(
       key: _scaffoldKey,
       drawer: const AppNavigationDrawer(currentRoute: '/notifications'),
       appBar: AppBar(
-        title: const Text('Notification Center'),
+        title: Text(l10n.notificationsTitle, style: AppTextStyles.headingSmall.copyWith(color: theme.colorScheme.onSurface)),
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.menu, color: theme.colorScheme.onSurface),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.done_all),
-            tooltip: 'Mark all as read',
+            icon: Icon(Icons.done_all, color: theme.colorScheme.onSurface),
+            tooltip: l10n.markAllAsRead,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All notifications marked as read.')),
+                SnackBar(content: Text(l10n.allNotificationsMarkedRead)),
               );
             },
           ),
@@ -64,12 +105,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ChoiceChip(
-                    label: Text(cat),
+                    label: Text(_getCategoryLabel(context, cat)),
                     selected: isSelected,
                     selectedColor: AppColors.primary,
-                    backgroundColor: AppColors.background,
+                    backgroundColor: theme.colorScheme.surfaceContainer,
                     labelStyle: AppTextStyles.caption.copyWith(
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? Colors.white : theme.colorScheme.onSurface,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                     onSelected: (selected) {
@@ -86,7 +127,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           Expanded(
             child: notificationsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error loading notifications: $err')),
+              error: (err, stack) => Center(child: Text('${l10n.unableToLoadNotifications}: $err')),
               data: (notifications) {
                 final filtered = _selectedCategory == 'All'
                     ? notifications
@@ -97,9 +138,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.notifications_off_outlined, size: 64, color: AppColors.textSecondary),
+                        Icon(Icons.notifications_off_outlined, size: 64, color: theme.colorScheme.onSurfaceVariant),
                         const SizedBox(height: 12),
-                        Text('No notifications in "$_selectedCategory"', style: AppTextStyles.bodyLarge),
+                        Text(l10n.noNotificationsAvailable, style: AppTextStyles.bodyLarge.copyWith(color: theme.colorScheme.onSurface)),
                       ],
                     ),
                   );
@@ -121,17 +162,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       ),
                       onDismissed: (_) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Notification "${item.title}" dismissed.')),
+                          SnackBar(content: Text('${_localizeTitle(context, item.title)} ${l10n.done}')),
                         );
                       },
                       child: Card(
                         elevation: item.isRead ? 0 : 2,
                         margin: const EdgeInsets.only(bottom: 12),
-                        color: item.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.04),
+                        color: item.isRead ? theme.colorScheme.surface : AppColors.primary.withValues(alpha: 0.12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(
-                            color: item.isRead ? AppColors.border : AppColors.primary.withValues(alpha: 0.3),
+                            color: item.isRead ? theme.colorScheme.outline : AppColors.primary.withValues(alpha: 0.4),
                           ),
                         ),
                         child: ListTile(
@@ -147,8 +188,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  item.title,
+                                  _localizeTitle(context, item.title),
                                   style: AppTextStyles.bodyMedium.copyWith(
+                                    color: theme.colorScheme.onSurface,
                                     fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
                                   ),
                                 ),
@@ -165,9 +207,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 4),
-                              Text(item.body, style: AppTextStyles.bodySmall),
+                              Text(item.body, style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                               const SizedBox(height: 6),
-                              Text(_formatTime(item.timestamp), style: AppTextStyles.caption),
+                              Text(_formatTime(context, item.timestamp), style: AppTextStyles.caption.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                             ],
                           ),
                         ),
@@ -213,12 +255,5 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       default:
         return AppColors.secondary;
     }
-  }
-
-  String _formatTime(DateTime time) {
-    final diff = DateTime.now().difference(time);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${time.day}/${time.month}/${time.year}';
   }
 }

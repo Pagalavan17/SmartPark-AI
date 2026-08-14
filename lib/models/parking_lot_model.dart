@@ -168,38 +168,115 @@ class ParkingLotModel extends Equatable {
     };
   }
 
+  static dynamic _getValue(Map<String, dynamic> map, List<String> possibleKeys) {
+    for (final key in possibleKeys) {
+      if (map.containsKey(key) && map[key] != null) {
+        return map[key];
+      }
+    }
+    final mapLower = {
+      for (var entry in map.entries) entry.key.toString().trim().toLowerCase(): entry.value
+    };
+    for (final key in possibleKeys) {
+      final keyLower = key.trim().toLowerCase();
+      if (mapLower.containsKey(keyLower) && mapLower[keyLower] != null) {
+        return mapLower[keyLower];
+      }
+    }
+    return null;
+  }
+
+  static double _toDouble(dynamic val, [double defaultValue = 0.0]) {
+    if (val == null) return defaultValue;
+    if (val is num) return val.toDouble();
+    if (val is String) return double.tryParse(val) ?? defaultValue;
+    return defaultValue;
+  }
+
+  static int _toInt(dynamic val, [int defaultValue = 0]) {
+    if (val == null) return defaultValue;
+    if (val is num) return val.toInt();
+    if (val is String) return int.tryParse(val) ?? defaultValue;
+    return defaultValue;
+  }
+
+  static bool _toBool(dynamic val, [bool defaultValue = false]) {
+    if (val == null) return defaultValue;
+    if (val is bool) return val;
+    if (val is String) return val.toLowerCase() == 'true';
+    if (val is num) return val != 0;
+    return defaultValue;
+  }
+
+  static List<String> _toListOfStrings(dynamic val) {
+    if (val == null) return [];
+    if (val is List) return val.map((e) => e.toString()).toList();
+    return [];
+  }
+
   factory ParkingLotModel.fromMap(Map<String, dynamic> map, String id) {
+    final nameVal = _getValue(map, ['name', 'title', 'parkingName']);
+    final addressVal = _getValue(map, ['address', 'location', 'parkingAddress']);
+    final latVal = _getValue(map, ['latitude', 'lat']);
+    final lngVal = _getValue(map, ['longitude', 'lng', 'long']);
+    final distVal = _getValue(map, ['distanceInKm', 'distance_in_km', 'distance', 'distanceKm']);
+    final walkVal = _getValue(map, ['walkingTimeInMins', 'walking_time_in_mins', 'walkingTime', 'walking_time']);
+    final driveVal = _getValue(map, ['driveTimeInMins', 'drive_time_in_mins', 'driveTime', 'drive_time']);
+    final baseRateVal = _getValue(map, ['baseHourlyRate', 'base_hourly_rate', 'hourlyRate', 'hourly_rate', 'currentHourlyRate', 'pricePerHour', 'price']);
+    final currentRateVal = _getValue(map, ['currentHourlyRate', 'current_hourly_rate', 'baseHourlyRate', 'base_hourly_rate', 'hourlyRate', 'hourly_rate', 'pricePerHour', 'price']);
+    final peakVal = _getValue(map, ['isPeakHour', 'is_peak_hour', 'peakHour']);
+    final peakMultVal = _getValue(map, ['peakSurgeMultiplier', 'peak_surge_multiplier', 'surgeMultiplier']);
+    final totalSlotsVal = _getValue(map, ['totalSlots', 'total_slots', 'totalSpots', 'total_spots', 'total', 'capacity']);
+    final availSlotsVal = _getValue(map, ['availableSlots', 'available_slots', 'availableSpots', 'available_spots', 'available', 'slots_available']);
+    final ratingVal = _getValue(map, ['rating', 'stars', 'rate']);
+    final reviewCountVal = _getValue(map, ['reviewCount', 'review_count', 'reviews']);
+    final securityRatingVal = _getValue(map, ['securityRating', 'security_rating']);
+    final imageUrlsVal = _getValue(map, ['imageUrls', 'image_urls', 'images']);
+    final aiScoreVal = _getValue(map, ['aiMatchScore', 'ai_match_score', 'aiScore', 'matchScore']);
+    final aiConfVal = _getValue(map, ['aiConfidence', 'ai_confidence']);
+    final aiSummaryVal = _getValue(map, ['aiReasoningSummary', 'ai_reasoning_summary', 'aiReasoning', 'aiSummary']);
+    final trafficVal = _getValue(map, ['trafficStatus', 'traffic_status', 'traffic']);
+    final congestionVal = _getValue(map, ['congestionLevel', 'congestion_level', 'congestion']);
+    final evVal = _getValue(map, ['isEVChargingAvailable', 'is_ev_charging_available', 'isEVCharging', 'evCharging', 'ev_charging', 'ev']);
+    final cctvVal = _getValue(map, ['hasCCTV', 'has_cctv', 'cctv']);
+    final coveredVal = _getValue(map, ['isCovered', 'is_covered', 'covered']);
+    final accessVal = _getValue(map, ['accessibilityFeatures', 'accessibility_features', 'accessibility']);
+    final hoursVal = _getValue(map, ['operatingHours', 'operating_hours', 'hours']);
+    final amenitiesVal = _getValue(map, ['amenities', 'features']);
+    final vehiclesVal = _getValue(map, ['availableVehicleTypes', 'available_vehicle_types', 'vehicleTypes']);
+
     return ParkingLotModel(
       id: id,
-      name: map['name'] ?? 'Parking Lot',
-      address: map['address'] ?? '',
-      latitude: (map['latitude'] ?? 0.0).toDouble(),
-      longitude: (map['longitude'] ?? 0.0).toDouble(),
-      distanceInKm: (map['distanceInKm'] ?? 0.0).toDouble(),
-      walkingTimeInMins: (map['walkingTimeInMins'] ?? 0).toInt(),
-      driveTimeInMins: (map['driveTimeInMins'] ?? 0).toInt(),
-      baseHourlyRate: (map['baseHourlyRate'] ?? 50.0).toDouble(),
-      currentHourlyRate: (map['currentHourlyRate'] ?? 50.0).toDouble(),
-      isPeakHour: map['isPeakHour'] ?? false,
-      peakSurgeMultiplier: (map['peakSurgeMultiplier'] ?? 1.0).toDouble(),
-      totalSlots: (map['totalSlots'] ?? 100).toInt(),
-      availableSlots: (map['availableSlots'] ?? 0).toInt(),
-      rating: (map['rating'] ?? 4.5).toDouble(),
-      reviewCount: (map['reviewCount'] ?? 0).toInt(),
-      securityRating: (map['securityRating'] ?? 4.8).toDouble(),
-      imageUrls: List<String>.from(map['imageUrls'] ?? []),
-      aiMatchScore: (map['aiMatchScore'] ?? 90.0).toDouble(),
-      aiConfidence: (map['aiConfidence'] ?? 95.0).toDouble(),
-      aiReasoningSummary: map['aiReasoningSummary'] ?? '',
-      trafficStatus: map['trafficStatus'] ?? 'Normal Traffic',
-      congestionLevel: (map['congestionLevel'] ?? 0.2).toDouble(),
-      isEVChargingAvailable: map['isEVChargingAvailable'] ?? false,
-      hasCCTV: map['hasCCTV'] ?? true,
-      isCovered: map['isCovered'] ?? true,
-      accessibilityFeatures: List<String>.from(map['accessibilityFeatures'] ?? []),
-      operatingHours: map['operatingHours'] ?? '24/7 Open',
-      amenities: List<String>.from(map['amenities'] ?? []),
-      availableVehicleTypes: List<String>.from(map['availableVehicleTypes'] ?? []),
+      name: (nameVal as String?) ?? 'Parking Lot',
+      address: (addressVal as String?) ?? '',
+      latitude: _toDouble(latVal),
+      longitude: _toDouble(lngVal),
+      distanceInKm: _toDouble(distVal),
+      walkingTimeInMins: _toInt(walkVal),
+      driveTimeInMins: _toInt(driveVal),
+      baseHourlyRate: _toDouble(baseRateVal),
+      currentHourlyRate: _toDouble(currentRateVal),
+      isPeakHour: _toBool(peakVal),
+      peakSurgeMultiplier: _toDouble(peakMultVal, 1.0),
+      totalSlots: _toInt(totalSlotsVal),
+      availableSlots: _toInt(availSlotsVal),
+      rating: _toDouble(ratingVal),
+      reviewCount: _toInt(reviewCountVal),
+      securityRating: _toDouble(securityRatingVal, 4.8),
+      imageUrls: _toListOfStrings(imageUrlsVal),
+      aiMatchScore: _toDouble(aiScoreVal, 90.0),
+      aiConfidence: _toDouble(aiConfVal, 95.0),
+      aiReasoningSummary: (aiSummaryVal as String?) ??
+          'Highly suitable parking location with good availability.',
+      trafficStatus: (trafficVal as String?) ?? 'Normal Traffic',
+      congestionLevel: _toDouble(congestionVal),
+      isEVChargingAvailable: _toBool(evVal),
+      hasCCTV: _toBool(cctvVal),
+      isCovered: _toBool(coveredVal),
+      accessibilityFeatures: _toListOfStrings(accessVal),
+      operatingHours: (hoursVal as String?) ?? '24/7 Open',
+      amenities: _toListOfStrings(amenitiesVal),
+      availableVehicleTypes: _toListOfStrings(vehiclesVal),
     );
   }
 

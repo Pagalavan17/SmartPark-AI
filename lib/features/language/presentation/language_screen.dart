@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../providers/app_state_providers.dart';
 
@@ -35,19 +36,25 @@ class LanguageScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeCode = ref.watch(activeLanguageCodeProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Select Language',
-        onBackPressed: () => context.go('/settings'),
+        title: context.l10n.selectLanguage,
+        onBackPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/settings');
+          }
+        },
       ),
       body: SafeArea(
         child: RadioGroup<String>(
           groupValue: activeCode,
           onChanged: (val) {
             if (val != null) {
-              ref.read(activeLanguageCodeProvider.notifier).state = val;
+              ref.read(activeLanguageCodeProvider.notifier).setLanguage(val);
             }
           },
           child: ListView.builder(
@@ -68,17 +75,24 @@ class LanguageScreen extends ConsumerWidget {
                   ),
                 ),
                 child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   onTap: () {
-                    ref.read(activeLanguageCodeProvider.notifier).state = lang.code;
+                    ref.read(activeLanguageCodeProvider.notifier).setLanguage(lang.code);
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('App language changed to ${lang.name}')),
+                      SnackBar(
+                        content: Text('${context.l10n.selectLanguage}: ${lang.nativeName}'),
+                        duration: const Duration(seconds: 2),
+                      ),
                     );
                   },
                   title: Text(
                     lang.nativeName,
-                    style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.bodyLarge.copyWith(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(lang.name, style: AppTextStyles.bodySmall),
+                  subtitle: Text(lang.name, style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                   trailing: Radio<String>(
                     value: lang.code,
                     activeColor: AppColors.primary,

@@ -194,11 +194,12 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
               itemCount: _quickChips.length,
               itemBuilder: (context, index) {
                 final chipText = _quickChips[index];
+                final theme = Theme.of(context);
                 return Padding(
                   padding: const EdgeInsets.only(right: 6.0),
                   child: ActionChip(
-                    label: Text(chipText, style: AppTextStyles.caption),
-                    backgroundColor: AppColors.background,
+                    label: Text(chipText, style: AppTextStyles.caption.copyWith(color: theme.colorScheme.onSurface)),
+                    backgroundColor: theme.colorScheme.surfaceContainer,
                     onPressed: () => _sendMessage(chipText),
                   ),
                 );
@@ -210,9 +211,9 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
           // Voice Waveform / Text Input Bar
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: AppColors.border)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline)),
             ),
             child: Row(
               children: [
@@ -236,14 +237,16 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
                   child: TextField(
                     controller: _textController,
                     onSubmitted: _sendMessage,
+                    style: AppTextStyles.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       hintText: _isListening ? 'Listening voice input...' : 'Ask AI anything about parking...',
+                      hintStyle: AppTextStyles.bodyMedium.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: AppColors.background,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainer,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),
                   ),
@@ -263,6 +266,7 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
 
   Widget _buildMessageBubble(ChatMessageModel msg) {
     final isUser = msg.isUser;
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Align(
@@ -274,7 +278,7 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isUser ? AppColors.primary : AppColors.background,
+                color: isUser ? AppColors.primary : theme.colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -288,7 +292,7 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
                   Text(
                     msg.text,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: isUser ? Colors.white : AppColors.textPrimary,
+                      color: isUser ? Colors.white : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (msg.actionRoute != null) ...[
@@ -313,7 +317,7 @@ class _AIAssistantSheetState extends ConsumerState<AIAssistantSheet> {
             const SizedBox(height: 2),
             Text(
               '${msg.timestamp.hour}:${msg.timestamp.minute.toString().padLeft(2, '0')}',
-              style: AppTextStyles.caption.copyWith(fontSize: 10),
+              style: AppTextStyles.caption.copyWith(fontSize: 10, color: theme.colorScheme.onSurfaceVariant),
             ),
           ],
         ),

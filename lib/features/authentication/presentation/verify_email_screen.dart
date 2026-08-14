@@ -71,7 +71,6 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     final email = authState.user?.email ?? ref.read(authRepositoryProvider).currentUser?.email ?? '';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(32.0),

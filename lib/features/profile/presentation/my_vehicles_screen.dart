@@ -13,7 +13,6 @@ class MyVehiclesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: 'My Vehicles',
         onBackPressed: () => context.go('/profile'),

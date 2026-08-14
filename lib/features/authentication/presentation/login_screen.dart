@@ -128,7 +128,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.largePadding),

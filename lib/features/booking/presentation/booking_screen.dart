@@ -46,7 +46,6 @@ class _BookingScreenState extends State<BookingScreen> {
     final double total = parkingFee + serviceFee + taxes - _discount;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Reserve Parking Slot'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.largePadding),

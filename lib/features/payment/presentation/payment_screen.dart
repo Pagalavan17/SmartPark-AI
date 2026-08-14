@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../services/payment/payment_providers.dart';
 
@@ -17,23 +18,24 @@ class PaymentScreen extends ConsumerStatefulWidget {
 }
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
-  String _selectedMethod = 'Razorpay (UPI / GPay / Cards)';
-
-  static const List<String> _paymentMethods = [
-    'Razorpay (UPI / GPay / Cards)',
-    'UPI Instant (PhonePe / Paytm)',
-    'Credit / Debit Card',
-    'Net Banking',
-    'SmartPark Wallet',
-  ];
+  String _selectedMethodKey = 'razorpay';
 
   @override
   Widget build(BuildContext context) {
     final paymentService = ref.watch(paymentServiceProvider);
+    final l10n = context.l10n;
+
+    final paymentMethods = [
+      {'key': 'razorpay', 'label': l10n.payWithRazorpay, 'icon': Icons.qr_code_scanner},
+      {'key': 'upi', 'label': '${l10n.upi} Instant', 'icon': Icons.account_balance_wallet_outlined},
+      {'key': 'card', 'label': l10n.card, 'icon': Icons.credit_card},
+      {'key': 'netBanking', 'label': l10n.netBanking, 'icon': Icons.account_balance_outlined},
+      {'key': 'wallet', 'label': l10n.wallet, 'icon': Icons.wallet_outlined},
+    ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout & Payment'),
+        title: Text(l10n.payment),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -56,7 +58,15 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Order Summary', style: AppTextStyles.headingSmall),
+                        Expanded(
+                          child: Text(
+                            l10n.reservation,
+                            style: AppTextStyles.headingSmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
@@ -68,7 +78,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    _buildRow('Base Parking Fee (2 Hours)', '₹100.00'),
+                    _buildRow('${l10n.hourlyRate} (2 ${l10n.durationHours(2)})', '₹100.00'),
                     _buildRow('Peak Surge Surcharge', '₹10.00'),
                     _buildRow('GST & Taxes (12%)', '₹12.00'),
                     _buildRow('Platform Service Fee', '₹15.00'),
@@ -76,7 +86,15 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Amount', style: AppTextStyles.headingSmall),
+                        Expanded(
+                          child: Text(
+                            l10n.totalAmount,
+                            style: AppTextStyles.headingSmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Text('₹137.00', style: AppTextStyles.headingLarge.copyWith(color: AppColors.primary)),
                       ],
                     ),
@@ -87,11 +105,15 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             const SizedBox(height: 24),
 
             // Select Payment Method
-            Text('Select Payment Gateway / Method', style: AppTextStyles.headingSmall),
+            Text(l10n.paymentMethod, style: AppTextStyles.headingSmall),
             const SizedBox(height: 12),
             Column(
-              children: _paymentMethods.map((method) {
-                final isSelected = _selectedMethod == method;
+              children: paymentMethods.map((method) {
+                final key = method['key'] as String;
+                final label = method['label'] as String;
+                final icon = method['icon'] as IconData;
+                final isSelected = _selectedMethodKey == key;
+
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
@@ -103,13 +125,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
                   ),
                   child: ListTile(
-                    onTap: () => setState(() => _selectedMethod = method),
+                    onTap: () => setState(() => _selectedMethodKey = key),
                     leading: Icon(
-                      _getMethodIcon(method),
+                      icon,
                       color: isSelected ? AppColors.primary : AppColors.textSecondary,
                     ),
                     title: Text(
-                      method,
+                      label,
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
@@ -123,7 +145,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
             // Pay Now Button
             PrimaryButton(
-              text: 'Pay ₹137.00 & Confirm Slot',
+              text: '${l10n.payNow} (₹137.00)',
               onPressed: () {
                 paymentService.startRazorpayPayment(
                   reservationId: 'SP-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}',
@@ -147,17 +169,25 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: AppTextStyles.bodySmall),
-          Text(value, style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.bodySmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  IconData _getMethodIcon(String method) {
-    if (method.contains('Card')) return Icons.credit_card;
-    if (method.contains('Wallet')) return Icons.account_balance_wallet_outlined;
-    if (method.contains('Net')) return Icons.account_balance_outlined;
-    return Icons.qr_code_scanner;
   }
 }

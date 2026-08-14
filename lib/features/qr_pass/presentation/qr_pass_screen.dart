@@ -4,20 +4,32 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/l10n_extension.dart';
+import '../../../core/utils/qr_pass_helper.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 
 /// Digital QR Gate Pass Screen for Entry & Exit Scanning
-class QrPassScreen extends StatelessWidget {
+class QrPassScreen extends StatefulWidget {
   const QrPassScreen({super.key});
+
+  @override
+  State<QrPassScreen> createState() => _QrPassScreenState();
+}
+
+class _QrPassScreenState extends State<QrPassScreen> {
+  final GlobalKey _repaintKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     const String qrDataToken = 'SMARTPARK_PASS_SP-982341_SLOT_A14';
+    final l10n = context.l10n;
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Entry / Exit QR Pass',
+        title: l10n.qrPassTitle,
         onBackPressed: () => context.go('/home'),
       ),
       body: SingleChildScrollView(
@@ -38,7 +50,7 @@ class QrPassScreen extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Present this QR code at the parking gate entrance / exit scanner.',
+                      l10n.scanQrAtGate,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.warning,
                         fontWeight: FontWeight.bold,
@@ -50,118 +62,123 @@ class QrPassScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Premium Digital Parking Ticket Card
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.shadow,
-                    blurRadius: 16,
-                    offset: Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Ticket Top Badge Header
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(AppConstants.cardBorderRadius),
-                        topRight: Radius.circular(AppConstants.cardBorderRadius),
+            // Premium Digital Parking Ticket Card wrapped in RepaintBoundary
+            RepaintBoundary(
+              key: _repaintKey,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? Colors.black45 : AppColors.shadow,
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Ticket Top Badge Header
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(AppConstants.cardBorderRadius),
+                          topRight: Radius.circular(AppConstants.cardBorderRadius),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.local_parking, color: Colors.white, size: 22),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Metro Cyber Park',
+                              style: AppTextStyles.headingSmall.copyWith(color: Colors.white, fontSize: 16),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              l10n.passActive.toUpperCase(),
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.success,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.local_parking, color: Colors.white, size: 24),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Metro Cyber Park',
-                              style: AppTextStyles.headingSmall.copyWith(color: Colors.white),
+
+                    // QR Code Generator Widget
+                    Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          QrImageView(
+                            data: qrDataToken,
+                            version: QrVersions.auto,
+                            size: 200.0,
+                            eyeStyle: const QrEyeStyle(
+                              eyeShape: QrEyeShape.square,
+                              color: AppColors.primary,
                             ),
-                          ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                            dataModuleStyle: QrDataModuleStyle(
+                              dataModuleShape: QrDataModuleShape.square,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
-                          child: Text(
-                            'ACTIVE',
+                          const SizedBox(height: 12),
+                          Text(
+                            '${l10n.bookingId}: #SP-982341',
                             style: AppTextStyles.caption.copyWith(
-                              color: AppColors.success,
                               fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
 
-                  // QR Code Generator Widget
-                  Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        QrImageView(
-                          data: qrDataToken,
-                          version: QrVersions.auto,
-                          size: 200.0,
-                          eyeStyle: const QrEyeStyle(
-                            eyeShape: QrEyeShape.square,
-                            color: AppColors.primary,
+                    Divider(height: 1, color: theme.colorScheme.outline),
+
+                    // Ticket Particulars Breakdown
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              _buildTicketInfo(l10n.selectVehicle, 'TN 01 AB 1234', context),
+                              const SizedBox(width: 12),
+                              _buildTicketInfo(l10n.parkingLocation, 'Slot A-14', context),
+                            ],
                           ),
-                          dataModuleStyle: const QrDataModuleStyle(
-                            dataModuleShape: QrDataModuleShape.square,
-                            color: AppColors.textPrimary,
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              _buildTicketInfo(l10n.startTime, '10:00 AM', context),
+                              const SizedBox(width: 12),
+                              _buildTicketInfo(l10n.endTime, '02:00 PM', context),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Pass ID: #SP-982341',
-                          style: AppTextStyles.caption.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-
-                  const Divider(height: 1, color: AppColors.border),
-
-                  // Ticket Particulars Breakdown
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildTicketInfo('Vehicle', 'TN 01 AB 1234'),
-                            _buildTicketInfo('Slot Allocated', 'Slot A-14'),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildTicketInfo('Entry Time', '10:00 AM'),
-                            _buildTicketInfo('Exit Time', '02:00 PM'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -171,29 +188,37 @@ class QrPassScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildActionIconButton(
+                  context: context,
                   icon: Icons.download_rounded,
-                  label: 'Download',
+                  label: l10n.download,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('QR Pass downloaded to gallery.')),
+                    QrPassHelper.downloadPass(
+                      context: context,
+                      repaintKey: _repaintKey,
+                      passId: 'SP-982341',
                     );
                   },
                 ),
                 _buildActionIconButton(
+                  context: context,
                   icon: Icons.share_rounded,
-                  label: 'Share',
+                  label: l10n.share,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sharing QR Pass link.')),
+                    QrPassHelper.sharePass(
+                      context: context,
+                      repaintKey: _repaintKey,
+                      passId: 'SP-982341',
+                      parkingName: 'Metro Cyber Park',
                     );
                   },
                 ),
                 _buildActionIconButton(
+                  context: context,
                   icon: Icons.directions_outlined,
-                  label: 'Navigate',
+                  label: l10n.navigate,
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Opening Google Maps navigation...')),
+                      SnackBar(content: Text('${l10n.startNavigation}...')),
                     );
                   },
                 ),
@@ -205,22 +230,38 @@ class QrPassScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTicketInfo(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.bodySmall),
-        const SizedBox(height: 2),
-        Text(value, style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
-      ],
+  Widget _buildTicketInfo(String label, String value, BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildActionIconButton({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Column(
       children: [
         InkWell(
@@ -229,17 +270,17 @@ class QrPassScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(color: AppColors.shadow, blurRadius: 10, offset: Offset(0, 4)),
+              boxShadow: [
+                BoxShadow(color: isDark ? Colors.black26 : AppColors.shadow, blurRadius: 10, offset: const Offset(0, 4)),
               ],
             ),
             child: Icon(icon, color: AppColors.primary, size: 24),
           ),
         ),
         const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+        Text(label, style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface)),
       ],
     );
   }

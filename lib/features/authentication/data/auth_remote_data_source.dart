@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -116,7 +117,50 @@ class AuthRemoteDataSource {
   // GOOGLE SIGN-IN
   // ─────────────────────────────────────────
 
+  /// Shared helper to handle Firestore profile creation/updating after Firebase Auth
+  Future<UserModel> _handleFirebaseUserSignIn(User user) async {
+    final docRef = _firestore.collection('users').doc(user.uid);
+    final doc = await docRef.get();
+
+    if (!doc.exists || doc.data() == null) {
+      // New Google user — create profile
+      final profile = UserModel(
+        uid: user.uid,
+        email: user.email ?? '',
+        name: user.displayName ?? 'Google User',
+        phoneNumber: user.phoneNumber ?? '',
+        avatarUrl: user.photoURL ?? '',
+        rewardPoints: 0,
+        driverScore: 5.0,
+        walletBalance: 0.0,
+        savedVehicleIds: const [],
+        createdAt: DateTime.now(),
+        isVerified: true,
+        isGoogleUser: true,
+      );
+      await docRef.set(profile.toFirestoreCreateMap());
+      return profile;
+    } else {
+      // Existing user — only update login-related fields
+      await docRef.update({
+        'lastLogin': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'isVerified': true,
+        'isGoogleUser': true,
+        if (user.photoURL != null && user.photoURL!.isNotEmpty)
+          'avatarUrl': user.photoURL,
+        if (user.email != null && user.email!.isNotEmpty)
+          'email': user.email,
+        if (user.displayName != null && user.displayName!.isNotEmpty)
+          'name': user.displayName,
+      });
+      return UserModel.fromMap(doc.data()!, doc.id);
+    }
+  }
+
+  /// Android Google Sign-In
   Future<UserModel?> signInWithGoogle() async {
+    debugPrint('GOOGLE AUTH PLATFORM: ANDROID');
     try {
       final googleAccount = await _googleSignIn.signIn();
       if (googleAccount == null) {
@@ -133,50 +177,16 @@ class AuthRemoteDataSource {
       final userCredential = await _auth.signInWithCredential(credential);
       final user = userCredential.user!;
 
-      // Check if profile exists in Firestore
-      final docRef = _firestore.collection('users').doc(user.uid);
-      final doc = await docRef.get();
-
-      if (!doc.exists || doc.data() == null) {
-        // New Google user — create profile
-        final profile = UserModel(
-          uid: user.uid,
-          email: user.email ?? '',
-          name: user.displayName ?? 'Google User',
-          phoneNumber: user.phoneNumber ?? '',
-          avatarUrl: user.photoURL ?? '',
-          rewardPoints: 0,
-          driverScore: 5.0,
-          walletBalance: 0.0,
-          savedVehicleIds: const [],
-          createdAt: DateTime.now(),
-          isVerified: true,
-          isGoogleUser: true,
-        );
-        await docRef.set(profile.toFirestoreCreateMap());
-        return profile;
-      } else {
-        // Existing user — only update login-related fields
-        await docRef.update({
-          'lastLogin': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-          'isVerified': true,
-          'isGoogleUser': true,
-          if (user.photoURL != null && user.photoURL!.isNotEmpty)
-            'avatarUrl': user.photoURL,
-          if (user.email != null && user.email!.isNotEmpty)
-            'email': user.email,
-          if (user.displayName != null && user.displayName!.isNotEmpty)
-            'name': user.displayName,
-        });
-        return UserModel.fromMap(doc.data()!, doc.id);
-      }
+      return await _handleFirebaseUserSignIn(user);
     } on FirebaseAuthException catch (e) {
+      debugPrint('GOOGLE AUTH CODE: ${e.code}');
+      debugPrint('GOOGLE AUTH MESSAGE: ${e.message}');
       throw AuthenticationException(
         AuthenticationException.fromFirebaseCode(e.code),
         code: e.code,
       );
     } catch (e) {
+      debugPrint('GOOGLE AUTH ERROR: $e');
       // Don't surface cancellation as error
       if (e.toString().contains('sign_in_canceled') ||
           e.toString().contains('cancelled')) {

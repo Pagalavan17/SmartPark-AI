@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 
 /// Reusable Custom App Bar for SmartPark AI screens
@@ -19,14 +18,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return AppBar(
-      title: Text(title, style: AppTextStyles.headingSmall),
+      title: Text(title, style: AppTextStyles.headingSmall.copyWith(color: theme.colorScheme.onSurface)),
       centerTitle: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: showBackButton
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
+              icon: Icon(Icons.arrow_back_ios_new, color: theme.colorScheme.onSurface, size: 20),
               onPressed: onBackPressed ?? () => Navigator.of(context).maybePop(),
             )
           : null,

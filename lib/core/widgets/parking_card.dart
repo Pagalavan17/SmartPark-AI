@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_constants.dart';
 import '../constants/app_text_styles.dart';
+import '../extensions/l10n_extension.dart';
 
 /// Reusable Parking Spot Card with availability badge & AI match score
 class ParkingCard extends StatelessWidget {
@@ -31,6 +32,8 @@ class ParkingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isHighAvailability = availableSlots > 5;
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     return Card(
       elevation: 2,
@@ -52,11 +55,12 @@ class ParkingCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       title,
-                      style: AppTextStyles.headingSmall,
+                      style: AppTextStyles.headingSmall.copyWith(color: theme.colorScheme.onSurface),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
@@ -64,11 +68,12 @@ class ParkingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.auto_awesome, size: 14, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Text(
-                          '${(aiMatchScore * 100).toInt()}% AI Match',
+                          l10n.aiScore(aiMatchScore.toInt()),
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -82,7 +87,7 @@ class ParkingCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 address,
-                style: AppTextStyles.bodyMedium,
+                style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -90,19 +95,29 @@ class ParkingCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 16, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(rating.toStringAsFixed(1), style: AppTextStyles.bodyMedium),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.location_on, size: 16, color: AppColors.secondary),
-                      const SizedBox(width: 4),
-                      Text('${distanceInKm.toStringAsFixed(1)} km', style: AppTextStyles.bodyMedium),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star, size: 16, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(rating.toStringAsFixed(1), style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurface)),
+                        const SizedBox(width: 12),
+                        const Icon(Icons.location_on, size: 16, color: AppColors.secondary),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            l10n.kmAway(double.parse(distanceInKm.toStringAsFixed(1))),
+                            style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   Text(
-                    '₹${hourlyRate.toInt()}/hr',
+                    l10n.ratePerHour(hourlyRate.toInt()),
                     style: AppTextStyles.headingSmall.copyWith(color: AppColors.primary),
                   ),
                 ],
@@ -111,14 +126,18 @@ class ParkingCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '$availableSlots / $totalSlots slots available',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: isHighAvailability ? AppColors.success : AppColors.warning,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      '$availableSlots / $totalSlots ${l10n.availableSlots.toLowerCase()}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: isHighAvailability ? AppColors.success : AppColors.warning,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textLight),
+                  Icon(Icons.arrow_forward_ios, size: 14, color: theme.colorScheme.onSurfaceVariant),
                 ],
               ),
             ],

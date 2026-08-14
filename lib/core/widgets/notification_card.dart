@@ -22,9 +22,11 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       elevation: isRead ? 0 : 2,
-      color: isRead ? AppColors.background : Colors.white,
+      color: isRead ? theme.colorScheme.surfaceContainer : theme.colorScheme.surface,
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
@@ -39,6 +41,7 @@ class NotificationCard extends StatelessWidget {
         title: Text(
           title,
           style: AppTextStyles.bodyLarge.copyWith(
+            color: theme.colorScheme.onSurface,
             fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
           ),
         ),
@@ -46,9 +49,9 @@ class NotificationCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text(body, style: AppTextStyles.bodyMedium),
+            Text(body, style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 6),
-            Text(timeAgo, style: AppTextStyles.caption),
+            Text(timeAgo, style: AppTextStyles.caption.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           ],
         ),
       ),

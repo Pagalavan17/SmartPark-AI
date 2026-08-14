@@ -14,17 +14,20 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
+            color: isDark ? Colors.black38 : AppColors.shadow,
             blurRadius: 16,
-            offset: Offset(0, -4),
+            offset: const Offset(0, -4),
           ),
         ],
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
@@ -37,9 +40,9 @@ class CustomBottomNavBar extends StatelessWidget {
         child: BottomNavigationBar(
           currentIndex: currentIndex,
           onTap: onTap,
-          backgroundColor: Colors.white,
+          backgroundColor: theme.colorScheme.surface,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textLight,
+          unselectedItemColor: isDark ? AppColors.darkTextSecondary : AppColors.textLight,
           type: BottomNavigationBarType.fixed,
           showUnselectedLabels: true,
           items: const [

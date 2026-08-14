@@ -86,13 +86,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     final isLoading = ref.watch(authControllerProvider).isLoading;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: theme.colorScheme.onSurface, size: 20),
           onPressed: isLoading ? null : () => context.go('/login'),
         ),
         backgroundColor: Colors.transparent,

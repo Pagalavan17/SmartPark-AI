@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/l10n_extension.dart';
 import '../../../core/widgets/custom_app_bar.dart';
 import '../../../core/widgets/custom_bottom_nav_bar.dart';
 import '../../authentication/presentation/auth_controller.dart';
@@ -22,7 +23,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Load latest user profile from Firestore
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(authControllerProvider.notifier).loadCurrentUserProfile();
     });
@@ -49,20 +49,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _handleLogout() async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(l10n.logout),
+        content: Text('${l10n.logout}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Logout'),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -78,6 +79,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
     final firebaseUser = ref.read(authRepositoryProvider).currentUser;
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
 
     final displayName = user?.name ?? firebaseUser?.displayName ?? 'SmartPark User';
     final displayEmail = user?.email ?? firebaseUser?.email ?? '';
@@ -89,13 +92,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final isVerified = user?.isVerified ?? firebaseUser?.emailVerified ?? false;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'User Profile',
+        title: l10n.profileTitle,
         showBackButton: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
+            icon: Icon(Icons.settings_outlined, color: theme.colorScheme.onSurface),
             onPressed: () => context.go('/settings'),
           ),
         ],
@@ -143,14 +145,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Text(displayName, style: AppTextStyles.headingMedium),
+                      Text(displayName, style: AppTextStyles.headingMedium.copyWith(color: theme.colorScheme.onSurface)),
                       const SizedBox(height: 4),
                       Text(
                         displayEmail +
                             (displayPhone.isNotEmpty
                                 ? ' • $displayPhone'
                                 : ''),
-                        style: AppTextStyles.bodyMedium,
+                        style: AppTextStyles.bodyMedium.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
@@ -204,33 +206,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
               // Menu Options
               _buildMenuTile(
+                context: context,
                 icon: Icons.directions_car_outlined,
-                title: 'My Vehicles',
-                subtitle: 'Manage registered vehicles & license plates',
+                title: l10n.myVehicles,
+                subtitle: 'Manage registered vehicles',
                 onTap: () => context.go('/vehicles'),
               ),
               _buildMenuTile(
-                icon: Icons.payment_outlined,
-                title: 'Saved Payment Methods',
-                subtitle: 'UPI IDs, Cards & Wallets',
-                onTap: () => context.go('/saved-payments'),
-              ),
-              _buildMenuTile(
+                context: context,
                 icon: Icons.history,
-                title: 'Booking History',
+                title: l10n.bookingHistory,
                 subtitle: 'Past reservations & receipts',
                 onTap: () => context.go('/history'),
               ),
               _buildMenuTile(
+                context: context,
                 icon: Icons.language_outlined,
-                title: 'App Language',
-                subtitle: 'English, Tamil, Hindi, Malayalam, Kannada',
+                title: l10n.language,
+                subtitle: 'English, தமிழ், हिंदी, മലയാളം, ಕನ್ನಡ',
                 onTap: () => context.go('/language'),
               ),
               _buildMenuTile(
+                context: context,
                 icon: Icons.settings_outlined,
-                title: 'Settings',
-                subtitle: 'Notifications, Security & Theme',
+                title: l10n.settings,
+                subtitle: l10n.settingsTitle,
                 onTap: () => context.go('/settings'),
               ),
               const SizedBox(height: 8),
@@ -249,16 +249,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: Icon(Icons.logout, color: AppColors.error),
                   ),
                   title: Text(
-                    'Logout',
+                    l10n.logout,
                     style: AppTextStyles.bodyLarge.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.error,
                     ),
                   ),
-                  subtitle: Text('Sign out of your account',
-                      style: AppTextStyles.bodySmall),
-                  trailing: const Icon(Icons.arrow_forward_ios,
-                      size: 14, color: AppColors.textLight),
+                  trailing: Icon(Icons.arrow_forward_ios,
+                      size: 14, color: theme.colorScheme.onSurfaceVariant),
                 ),
               ),
             ],
@@ -328,11 +326,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildMenuTile({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 1,
       margin: const EdgeInsets.only(bottom: 12),
@@ -346,11 +346,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Icon(icon, color: AppColors.primary),
         ),
         title: Text(title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.bodyLarge
-                .copyWith(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: AppTextStyles.bodySmall),
-        trailing: const Icon(Icons.arrow_forward_ios,
-            size: 14, color: AppColors.textLight),
+                .copyWith(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodySmall.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        trailing: Icon(Icons.arrow_forward_ios,
+            size: 14, color: theme.colorScheme.onSurfaceVariant),
       ),
     );
   }
